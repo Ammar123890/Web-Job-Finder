@@ -3,15 +3,35 @@ const Job = require('../Models/Job')
 const Application = require('../Models/Application')
 const jwt = require('jsonwebtoken')
 
-const signup = (req,res)=>{
-    const {name, email, password, role,contacts} = req.body;
-
-    const newUser = new User({name:name, email:email, password:password, role:role, contacts:contacts})
-    newUser.save().then((user)=>{
-        res.status(200).send({message:'Successfully added user',user:user})
-    }).catch((err)=>res.status(400).send({message:'Error adding user',error:err}))
-
-}
+const signup = (req, res) => {
+    const { name, email, password, role, contacts } = req.body;
+    User.findOne({ email: email }).then((user) => {
+      if (user) {
+        res.status(400).send({ message: 'User already exists' });
+        return;
+      }
+  
+      const newUser = new User({
+        name: name,
+        email: email,
+        password: password,
+        role: role,
+        contacts: contacts,
+      });
+      newUser
+        .save()
+        .then((user) => {
+          res.status(200).send({
+            message: 'Successfully added user',
+            user: user,
+          });
+        })
+        .catch((err) =>
+          res.status(400).send({ message: 'Error adding user', error: err })
+        );
+    });
+  };
+  
 
 const login = (req,res)=>{
     const {email, password} = req.body;
